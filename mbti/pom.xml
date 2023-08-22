@@ -11,7 +11,7 @@
 	<groupId>com.study.mbti</groupId>
 	<artifactId>mbti</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 	<name>mbti</name>
 	<description>mbtiProject</description>
 	<properties>
@@ -108,7 +108,7 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
-					<mainClass>com.study.mbti</mainClass>
+					<mainClass>com.study.mbti.MbtiApplication</mainClass>
 				</configuration>
 			</plugin>
 		</plugins>

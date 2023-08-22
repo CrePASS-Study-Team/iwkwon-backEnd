@@ -13,6 +13,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/api" , method = RequestMethod.POST)
+@CrossOrigin(origins = "http:localhost:3000")
 public class SurveyController {
 
 	private final SurveyRepository surveyRepository;
@@ -72,7 +74,6 @@ public class SurveyController {
 					.S_SURVEY_QUESTIONS(questions.toString())
 					.build();
 			SurveyEntity save = surveyRepository.save(survey);
-			System.out.println(save.getS_CREATE_AT());
 		} catch (Exception e) {
 			response.setCode(999);
 			response.setMessage("관리자문의");
