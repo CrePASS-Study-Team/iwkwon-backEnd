@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./target/mbti-0.0.1-SNAPSHOT.jar:/myapp/app.jar

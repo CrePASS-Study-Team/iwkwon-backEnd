@@ -29,7 +29,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/api" , method = RequestMethod.POST)
-@CrossOrigin(origins = "http:localhost:3000")
+@CrossOrigin(origins = "http://localhost:3000")
 public class SurveyController {
 
 	private final SurveyRepository surveyRepository;
