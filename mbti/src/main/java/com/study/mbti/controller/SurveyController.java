@@ -49,11 +49,11 @@ public class SurveyController {
 		try {
 
 			SurveyEntity survey = surveyRepository.findRandomEntity();
-			result.put("unique_id", survey.getS_SURVEY_ID());
-			result.put("length", survey.getS_SURVEY_LENGTH());
-			result.put("survey", survey.getS_SURVEY_QUESTIONS());
+//			result.put("unique_id", survey.getS_SURVEY_ID());
+//			result.put("length", survey.getS_SURVEY_LENGTH());
+//			result.put("survey", survey.getS_SURVEY_QUESTIONS());
 			
-			response.setData(result);
+			response.setData(survey);
 
 
 		} catch (Exception e) {
