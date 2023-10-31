@@ -27,7 +27,7 @@ public class CreateSurveyScheController {
 	private final SurveyRepository surveyRepository;
 	
 	//매주 일,목 새벽4시에 설문 하나씩 생성함
-	@Scheduled(cron = "0 0 4 * * 0,4")
+	//@Scheduled(cron = "0 0 4 * * 0,4")
 	public void createSurveySche() {
 		
 		try {
