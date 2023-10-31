@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,13 +19,13 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(path = "/api" , method = RequestMethod.POST)
-@CrossOrigin(origins = "http:localhost:3000")
+@RequestMapping(path = "/api")
+@CrossOrigin(origins = "http://localhost:3000")
 public class ETCController {
 
 	private final NavigationRepository navigationRepository;
 	
-	@RequestMapping(path = "/navigation")
+	@PostMapping(path = "/navigation")
 	public ResponseEntity<?> selectNavigation(){
 		
 		ResponseResult response = new ResponseResult();

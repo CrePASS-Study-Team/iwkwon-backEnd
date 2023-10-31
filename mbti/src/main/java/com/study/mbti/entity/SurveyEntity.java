@@ -46,6 +46,7 @@ public class SurveyEntity {
 //	
 //	@Column(nullable = true)
 //	private Timestamp S_CREATED_DT;
+	
 	public SurveyEntity(String surveyId, int length, String body) {
 		this.S_SURVEY_ID = surveyId;
 		this.S_SURVEY_LENGTH = length;
