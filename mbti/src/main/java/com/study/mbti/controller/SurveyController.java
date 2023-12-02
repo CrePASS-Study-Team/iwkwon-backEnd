@@ -189,11 +189,10 @@ public class SurveyController {
 			result.put("percentage", percentage.toMap());
 			result.put("result", surveyAnswer.getResult());
 			
-			return ResponseEntity.ok(Map.of(
-					"code", 200,
-					"message", "Success",
-					"data", result
-					));
+			response.setCode(200);
+			response.setMessage("Success");
+			response.setData(result);
+			return ResponseEntity.ok(response);
 			
 		} catch (Exception e) {
 			
