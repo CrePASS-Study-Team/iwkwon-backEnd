@@ -20,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/api")
-@CrossOrigin(origins = "http://localhost:3000")
 public class ETCController {
 
 	private final NavigationRepository navigationRepository;

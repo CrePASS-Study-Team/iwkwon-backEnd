@@ -6,6 +6,8 @@ import java.util.List;
 
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -15,6 +17,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,7 +28,9 @@ import org.springframework.web.client.RestTemplate;
 
 import com.study.mbti.common.ResponseResult;
 import com.study.mbti.dto.ReqAnswerDto;
+import com.study.mbti.entity.SurveyAnswerEntity;
 import com.study.mbti.entity.SurveyEntity;
+import com.study.mbti.repository.SurveyAnswersRepository;
 import com.study.mbti.repository.SurveyRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -31,13 +38,14 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(path = "/api" , method = RequestMethod.POST)
-@CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping(path = "/api")
 public class SurveyController {
 
 	private final SurveyRepository surveyRepository;
 	
-	@RequestMapping(path = "/survey/create")
+	private final SurveyAnswersRepository surveyAnswersRepository;
+	
+	@PostMapping(path = "/survey/create")
 	public ResponseEntity<?> surveyCreate(){
 		
 		Map<String, Object> result = new HashMap<>();
@@ -49,24 +57,29 @@ public class SurveyController {
 		try {
 
 			SurveyEntity survey = surveyRepository.findRandomEntity();
-//			result.put("unique_id", survey.getS_SURVEY_ID());
-//			result.put("length", survey.getS_SURVEY_LENGTH());
-//			result.put("survey", survey.getS_SURVEY_QUESTIONS());
+			result.put("unique_id", survey.getS_SURVEY_ID());
+			result.put("length", survey.getS_SURVEY_LENGTH());
 			
-			response.setData(survey);
+			JSONArray surveyJson = new JSONArray(survey.getS_SURVEY_QUESTIONS());
+			List<Map<String, Object>> list = IntStream.range(0, surveyJson.length())
+                    .mapToObj(i -> ((JSONObject) surveyJson.get(i)).toMap())
+                    .collect(Collectors.toList());
+			result.put("survey", list);
+			response.setData(result);
 
 
 		} catch (Exception e) {
 			response.setCode(999);
 			response.setMessage("관리자에게 문의 해주세요.");
+			response.setData(e.getMessage());
 		
-			return new ResponseEntity<ResponseResult>(response, HttpStatus.OK);
+			return ResponseEntity.ok(response);
 		}
 		
-		return new ResponseEntity<ResponseResult>(response, HttpStatus.OK);
+		return ResponseEntity.ok(response);
 	}
 	
-	@RequestMapping(path = "/survey/create/test")
+	@PostMapping(path = "/survey/create/test")
 	public ResponseEntity<?> surveyCreateTest(){
 		
 		ResponseResult response = new ResponseResult();
@@ -107,7 +120,7 @@ public class SurveyController {
 		return new ResponseEntity<ResponseResult>(response, HttpStatus.OK);
 	}
 	
-	@RequestMapping(path = "/survey/answers")
+	@PostMapping(path = "/survey/answers")
 	public ResponseEntity<?> surveyAnswers(@RequestBody String reqStr){
 		
 		JSONObject jsonStr = new JSONObject(reqStr);
@@ -130,15 +143,26 @@ public class SurveyController {
 			
 			HttpEntity<String> entity = new HttpEntity<>(reqJSON.toString(),header);
 			
-			System.out.println(entity.getBody());
 			ResponseEntity<String> responseEntity = restTemplate.postForEntity("http://3.35.152.198:8000/survey/answers", entity, String.class);
 			System.out.println("survey answers: " + responseEntity);
 			
 			JSONObject responseSurvey = new JSONObject(responseEntity.getBody());
 			
+			SurveyAnswerEntity surveyAnswer = SurveyAnswerEntity.builder()
+					.id(responseSurvey.getString("id"))
+					.type(responseSurvey.getString("type"))
+					.percentage(responseSurvey.getJSONObject("percentage").toString())
+					.result(responseSurvey.getString("result"))
+					.build();
+					
+			surveyAnswersRepository.save(surveyAnswer);
+			
+			Map<String,Object> result = new HashMap<String,Object>();
+			result.put("id", responseSurvey.getString("id"));
+			
 			response.setCode(200);
 			response.setMessage("Success");
-			response.setData(responseSurvey.toString());
+			response.setData(result);
 			
 		} catch (Exception e) {
 			response.setCode(999);
@@ -150,6 +174,37 @@ public class SurveyController {
 		return new ResponseEntity<ResponseResult>(response, HttpStatus.OK);
 	}
 	
+	@GetMapping(path = "/survey/result/{id}")
+	public ResponseEntity<?> resultAnswer(@PathVariable String id){
+		
+		ResponseResult response = new ResponseResult();
+		Map<String,Object> result = new HashMap<>();
+		
+		try {
+			SurveyAnswerEntity surveyAnswer = surveyAnswersRepository.findById(id);
+			JSONObject percentage = new JSONObject(surveyAnswer.getPercentage());
+			
+			result.put("id", surveyAnswer.getId());
+			result.put("type", surveyAnswer.getType());
+			result.put("percentage", percentage.toMap());
+			result.put("result", surveyAnswer.getResult());
+			
+			return ResponseEntity.ok(Map.of(
+					"code", 200,
+					"message", "Success",
+					"data", result
+					));
+			
+		} catch (Exception e) {
+			
+			response.setCode(999);
+			response.setMessage("관리자에게 문의 해주세요.");
+			response.setData(e.getMessage());
+			System.out.println(e.getMessage());
+			return new ResponseEntity<ResponseResult>(response, HttpStatus.OK);
+		}
+		
+	}
 	
 }
 
