@@ -27,7 +27,7 @@ public class CreateSurveyScheController {
 	private final SurveyRepository surveyRepository;
 	
 	//매주 일,목 새벽4시에 설문 하나씩 생성함
-	//@Scheduled(cron = "0 0 4 * * 0,4")
+	@Scheduled(cron = "0 0 4 * * 0,4")
 	public void createSurveySche() {
 		
 		try {
@@ -41,7 +41,6 @@ public class CreateSurveyScheController {
 
 			
 			ResponseEntity<String> responseEntity = restTemplate.postForEntity("http://3.35.152.198:8000/survey/questions", entity, String.class);
-			System.out.println("created survey : " + responseEntity.getBody());
 			
 			JSONObject responseSurvey = new JSONObject(responseEntity.getBody());
 			JSONArray questions = responseSurvey.getJSONArray("questions");
